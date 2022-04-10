@@ -1,8 +1,10 @@
 Kitronik_Game_Controller.onButtonPress(Kitronik_Game_Controller.ControllerButtonPins.Fire1, Kitronik_Game_Controller.ControllerButtonEvents.Down, function () {
-    radio.sendString("S")
+    while (Kitronik_Game_Controller.buttonIsPressed(Kitronik_Game_Controller.ControllerButtonPins.Fire2)) {
+        radio.sendString("CD")
+    }
 })
 Kitronik_Game_Controller.onButtonPress(Kitronik_Game_Controller.ControllerButtonPins.Fire2, Kitronik_Game_Controller.ControllerButtonEvents.Down, function () {
-    while (Kitronik_Game_Controller.buttonIsPressed(Kitronik_Game_Controller.ControllerButtonPins.Fire2)) {
+    while (Kitronik_Game_Controller.buttonIsPressed(Kitronik_Game_Controller.ControllerButtonPins.Fire1)) {
         radio.sendString("CU")
     }
 })
@@ -28,26 +30,22 @@ radio.onReceivedString(function (receivedString) {
         motor.servo(motor.Servos.S1, 135)
     } else if (receivedString == "R") {
         motor.servo(motor.Servos.S1, 45)
-    } else if (receivedString == "S") {
-        motor.motorStopAll()
     } else if (receivedString == "CU" && domeServoVerticalAngle < 180) {
         domeServoVerticalAngle += 5
     } else if (receivedString == "CL" && domeServoHorizontalAngle > 0) {
         domeServoHorizontalAngle += -5
     } else if (receivedString == "CR" && domeServoHorizontalAngle < 180) {
         domeServoHorizontalAngle += 5
+    } else if (receivedString == "CD" && domeServoVerticalAngle < 180) {
+        domeServoVerticalAngle += -5
     } else {
         motor.servo(motor.Servos.S1, 90)
         motor.motorStopAll()
     }
     motor.servo(motor.Servos.S3, 180 - domeServoHorizontalAngle)
-    if (domeServoVerticalAngle > 90 && receivedString != "CU") {
-        domeServoVerticalAngle += -5
-    }
     if (previousVerticalAngle != domeServoVerticalAngle) {
         motor.servo(motor.Servos.S2, 180 - domeServoVerticalAngle)
     }
-    previousVerticalAngle = domeServoVerticalAngle
 })
 input.onButtonPressed(Button.B, function () {
     radio.sendString("CR")
